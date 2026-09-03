@@ -19,7 +19,7 @@
 
 
 
-    <com.spradhan.uxcomponentLib.SpinnerField
+    <SpinnerField
         android:id="@+id/supplierSpF"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

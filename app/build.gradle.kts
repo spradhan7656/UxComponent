@@ -42,6 +42,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
-    implementation(project(":uxcomponentLib"))
+    implementation("com.github.spradhan7656:UxComponent:1.0.0")
 
 }
