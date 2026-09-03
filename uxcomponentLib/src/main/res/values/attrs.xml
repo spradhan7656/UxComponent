@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="labelText" format="string"/>
+    <attr name="hintText" format="string"/>
+    <attr name="required" format="boolean"/>
+    <attr name="fieldBackground" format="reference"/>
+    <attr name="dropdownIcon" format="reference"/>
+    <declare-styleable name="InputField">
+        <attr name="labelText"/>
+        <attr name="hintText"/>
+        <attr name="required"/>
+        <attr name="fieldBackground"/>
+    </declare-styleable>
+
+    <declare-styleable name="SpinnerField">
+        <attr name="labelText"/>
+        <attr name="required"/>
+        <attr name="fieldBackground"/>
+        <attr name="dropdownIcon"/>
+    </declare-styleable>
+</resources>
