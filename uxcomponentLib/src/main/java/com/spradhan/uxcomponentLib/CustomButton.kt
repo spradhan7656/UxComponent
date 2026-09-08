@@ -6,10 +6,8 @@ import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
-import androidx.annotation.ColorInt
-import androidx.core.content.ContextCompat
+import androidx.core.content.withStyledAttributes
 import com.spradhan.uxcomponentLib.databinding.AnimatedButtonBinding
-
 
 class CustomButton @JvmOverloads constructor(
     context: Context,
@@ -24,209 +22,266 @@ class CustomButton @JvmOverloads constructor(
             true
         )
 
-    private var buttonText: String = ""
-    private var loadingText: String = "Please wait..."
+    private var buttonText = ""
+    private var loadingText = "Please wait..."
 
-    private var isLoadingState = false
+    private var loading = false
 
-    private var normalTextColor: Int = Color.WHITE
-    private var loadingTextColor: Int = Color.WHITE
+    private var textColor = Color.WHITE
+    private var loadingTextColor = Color.WHITE
 
-    private var normalBackground: GradientConfig? = null
+    private var gradientStart = Color.TRANSPARENT
+    private var gradientEnd = Color.TRANSPARENT
+
+    private var backgroundColor = Color.TRANSPARENT
+
+    private var cornerRadius = 0f
+
+    private var topLeftRadius = 0f
+    private var topRightRadius = 0f
+    private var bottomRightRadius = 0f
+    private var bottomLeftRadius = 0f
+
+    private var strokeWidth = 0f
+    private var strokeColor = Color.TRANSPARENT
+
+    private var strokeDashWidth = 0f
+    private var strokeDashGap = 0f
+
+    private var gradientOrientation =
+        GradientDrawable.Orientation.LEFT_RIGHT
 
     init {
-        context.theme.obtainStyledAttributes(
+
+        readAttributes(context, attrs)
+
+        applyBackground()
+
+        updateUI()
+    }
+
+    private fun readAttributes(
+        context: Context,
+        attrs: AttributeSet?
+    ) {
+
+        context.withStyledAttributes(
             attrs,
-            R.styleable.CustomButton,
-            0,
-            0
-        ).apply {
+            R.styleable.CustomButton
+        ) {
 
-            try {
-
-                buttonText = getString(
+            buttonText =
+                getString(
                     R.styleable.CustomButton_cb_text
                 ).orEmpty()
 
-                loadingText = getString(
+            loadingText =
+                getString(
                     R.styleable.CustomButton_cb_loadingText
                 ) ?: "Please wait..."
 
-                normalTextColor = getColor(
+            textColor =
+                getColor(
                     R.styleable.CustomButton_cb_textColor,
                     Color.WHITE
                 )
 
-                loadingTextColor = getColor(
+            loadingTextColor =
+                getColor(
                     R.styleable.CustomButton_cb_loadingTextColor,
-                    normalTextColor
+                    textColor
                 )
 
-                val enabled =
-                    getBoolean(
-                        R.styleable.CustomButton_cb_enabled,
-                        true
-                    )
+            gradientStart =
+                getColor(
+                    R.styleable.CustomButton_cb_gradientColorStart,
+                    Color.TRANSPARENT
+                )
 
-                binding.root.isEnabled = enabled
+            gradientEnd =
+                getColor(
+                    R.styleable.CustomButton_cb_gradientColorEnd,
+                    Color.TRANSPARENT
+                )
 
-            } finally {
-                recycle()
+            backgroundColor =
+                getColor(
+                    R.styleable.CustomButton_cb_backgroundColor,
+                    Color.TRANSPARENT
+                )
+
+            cornerRadius =
+                getDimension(
+                    R.styleable.CustomButton_cb_cornerRadius,
+                    0f
+                )
+
+            topLeftRadius =
+                getDimension(
+                    R.styleable.CustomButton_cb_topLeftRadius,
+                    0f
+                )
+
+            topRightRadius =
+                getDimension(
+                    R.styleable.CustomButton_cb_topRightRadius,
+                    0f
+                )
+
+            bottomRightRadius =
+                getDimension(
+                    R.styleable.CustomButton_cb_bottomRightRadius,
+                    0f
+                )
+
+            bottomLeftRadius =
+                getDimension(
+                    R.styleable.CustomButton_cb_bottomLeftRadius,
+                    0f
+                )
+
+            strokeWidth =
+                getDimension(
+                    R.styleable.CustomButton_cb_strokeWidth,
+                    0f
+                )
+
+            strokeColor =
+                getColor(
+                    R.styleable.CustomButton_cb_strokeColor,
+                    Color.TRANSPARENT
+                )
+
+            strokeDashWidth =
+                getDimension(
+                    R.styleable.CustomButton_cb_strokeDashWidth,
+                    0f
+                )
+
+            strokeDashGap =
+                getDimension(
+                    R.styleable.CustomButton_cb_strokeDashGap,
+                    0f
+                )
+
+            val orientation =
+                getInt(
+                    R.styleable.CustomButton_cb_gradientOrientation,
+                    0
+                )
+
+            gradientOrientation =
+                when (orientation) {
+
+                    0 ->
+                        GradientDrawable.Orientation.LEFT_RIGHT
+
+                    1 ->
+                        GradientDrawable.Orientation.RIGHT_LEFT
+
+                    2 ->
+                        GradientDrawable.Orientation.TOP_BOTTOM
+
+                    3 ->
+                        GradientDrawable.Orientation.BOTTOM_TOP
+
+                    else ->
+                        GradientDrawable.Orientation.LEFT_RIGHT
+                }
+
+            loading =
+                getBoolean(
+                    R.styleable.CustomButton_cb_loading,
+                    false
+                )
+
+            // Icons
+            val startIcon =
+                getResourceId(
+                    R.styleable.CustomButton_cb_startIcon,
+                    0
+                )
+
+            if (startIcon != 0) {
+                binding.btnStartIcon.setImageResource(startIcon)
+            }
+
+            val endIcon =
+                getResourceId(
+                    R.styleable.CustomButton_cb_endIcon,
+                    0
+                )
+
+            if (endIcon != 0) {
+                binding.btnEndIcon.setImageResource(endIcon)
             }
         }
-
-        setupViews()
-        updateUI()
     }
 
-    private fun setupViews() {
+    private fun applyBackground() {
 
-        binding.root.setOnClickListener {
+        val density =
+            resources.displayMetrics.density
 
-            if (!isLoadingState && isEnabled) {
-                performClick()
-            }
-        }
-    }
+        val config =
+            GradientConfig(
 
-    override fun performClick(): Boolean {
-        return super.performClick()
-    }
+                shape =
+                    GradientDrawable.RECTANGLE,
 
-    // ---------------------------------------------------------
-    // TEXT
-    // ---------------------------------------------------------
+                colors =
+                    if (
+                        gradientStart != Color.TRANSPARENT ||
+                        gradientEnd != Color.TRANSPARENT
+                    ) {
+                        intArrayOf(
+                            gradientStart,
+                            gradientEnd
+                        )
+                    } else {
+                        null
+                    },
 
-    fun setText(text: String) {
-        buttonText = text
+                solidColor =
+                    if (
+                        gradientStart == Color.TRANSPARENT &&
+                        gradientEnd == Color.TRANSPARENT
+                    ) {
+                        backgroundColor
+                    } else {
+                        null
+                    },
 
-        if (!isLoadingState) {
-            binding.tvButton.text = text
-        }
-    }
+                orientation =
+                    gradientOrientation,
 
-    fun getText(): String {
-        return buttonText
-    }
+                cornerRadiusDp =
+                    cornerRadius / density,
 
-    fun setLoadingText(text: String) {
-        loadingText = text
+                topLeftRadiusDp =
+                    topLeftRadius / density,
 
-        if (isLoadingState) {
-            binding.tvButton.text = text
-        }
-    }
+                topRightRadiusDp =
+                    topRightRadius / density,
 
-    // ---------------------------------------------------------
-    // LOADING
-    // ---------------------------------------------------------
+                bottomRightRadiusDp =
+                    bottomRightRadius / density,
 
-    fun setLoading(loading: Boolean) {
+                bottomLeftRadiusDp =
+                    bottomLeftRadius / density,
 
-        if (isLoadingState == loading) {
-            return
-        }
+                strokeWidthDp =
+                    strokeWidth / density,
 
-        isLoadingState = loading
+                strokeColor =
+                    strokeColor,
 
-        updateUI()
-    }
+                strokeDashWidthDp =
+                    strokeDashWidth / density,
 
-    fun isLoading(): Boolean {
-        return isLoadingState
-    }
-
-    private fun updateUI() {
-
-        if (isLoadingState) {
-
-            isEnabled = false
-            binding.root.isEnabled = false
-
-            binding.progressBar.visibility = VISIBLE
-
-            binding.tvButton.text = loadingText
-            binding.tvButton.setTextColor(loadingTextColor)
-
-            // Usually hide icons while loading
-            binding.btnStartIcon.visibility = INVISIBLE
-            binding.btnEndIcon.visibility = INVISIBLE
-
-        } else {
-
-            isEnabled = true
-            binding.root.isEnabled = true
-
-            binding.progressBar.visibility = GONE
-
-            binding.tvButton.text = buttonText
-            binding.tvButton.setTextColor(normalTextColor)
-
-            binding.btnStartIcon.visibility = VISIBLE
-            binding.btnEndIcon.visibility = VISIBLE
-        }
-    }
-
-    // ---------------------------------------------------------
-    // ENABLE / DISABLE
-    // ---------------------------------------------------------
-
-    override fun setEnabled(enabled: Boolean) {
-
-        super.setEnabled(enabled)
-
-        if (!isLoadingState) {
-            binding.root.isEnabled = enabled
-
-            binding.tvButton.alpha =
-                if (enabled) 1f else 0.5f
-        }
-    }
-
-    // ---------------------------------------------------------
-    // ICONS
-    // ---------------------------------------------------------
-
-    fun setStartIcon(resId: Int) {
-
-        binding.btnStartIcon.setImageResource(resId)
-        binding.btnStartIcon.visibility = VISIBLE
-    }
-
-    fun setEndIcon(resId: Int) {
-
-        binding.btnEndIcon.setImageResource(resId)
-        binding.btnEndIcon.visibility = VISIBLE
-    }
-
-    fun hideStartIcon() {
-        binding.btnStartIcon.visibility = GONE
-    }
-
-    fun hideEndIcon() {
-        binding.btnEndIcon.visibility = GONE
-    }
-
-    // ---------------------------------------------------------
-    // TEXT COLOR
-    // ---------------------------------------------------------
-
-    fun setButtonTextColor(@ColorInt color: Int) {
-
-        normalTextColor = color
-
-        if (!isLoadingState) {
-            binding.tvButton.setTextColor(color)
-        }
-    }
-
-    // ---------------------------------------------------------
-    // BACKGROUND
-    // ---------------------------------------------------------
-
-    fun setGradient(config: GradientConfig) {
-
-        normalBackground = config
+                strokeDashGapDp =
+                    strokeDashGap / density
+            )
 
         binding.clButton.background =
             CommonUtils.createDynamicGradient(
@@ -235,21 +290,83 @@ class CustomButton @JvmOverloads constructor(
             )
     }
 
-    // ---------------------------------------------------------
-    // SIMPLE SOLID BACKGROUND
-    // ---------------------------------------------------------
+    private fun updateUI() {
 
-    fun setSolidBackground(
-        @ColorInt color: Int,
-        radiusDp: Float = 0f
-    ) {
+        if (loading) {
 
-        val config = GradientConfig(
-            shape = GradientDrawable.RECTANGLE,
-            solidColor = color,
-            cornerRadiusDp = radiusDp
-        )
+            binding.progressBar.visibility =
+                VISIBLE
 
-        setGradient(config)
+            binding.tvButton.text =
+                loadingText
+
+            binding.tvButton.setTextColor(
+                loadingTextColor
+            )
+
+            binding.btnStartIcon.visibility =
+                INVISIBLE
+
+            binding.btnEndIcon.visibility =
+                INVISIBLE
+
+            isEnabled = false
+
+        } else {
+
+            binding.progressBar.visibility =
+                GONE
+
+            binding.tvButton.text =
+                buttonText
+
+            binding.tvButton.setTextColor(
+                textColor
+            )
+
+            restoreIcons()
+
+            isEnabled = true
+        }
+    }
+
+    private fun restoreIcons() {
+
+        binding.btnStartIcon.visibility =
+            if (binding.btnStartIcon.drawable != null)
+                VISIBLE
+            else
+                GONE
+
+        binding.btnEndIcon.visibility =
+            if (binding.btnEndIcon.drawable != null)
+                VISIBLE
+            else
+                GONE
+    }
+
+    fun setLoading(value: Boolean) {
+
+        loading = value
+
+        updateUI()
+    }
+
+    fun setButtonText(value: String) {
+
+        buttonText = value
+
+        if (!loading) {
+            binding.tvButton.text = value
+        }
+    }
+
+    fun setLoadingText(value: String) {
+
+        loadingText = value
+
+        if (loading) {
+            binding.tvButton.text = value
+        }
     }
 }

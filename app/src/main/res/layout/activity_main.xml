@@ -19,11 +19,11 @@
 
 
 
-    <com.spradhan.uxcomponentLib.SpinnerField
-        android:id="@+id/supplierSpF"
+    <com.spradhan.uxcomponentLib.CustomButton
+        android:id="@+id/btnLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:labelText="SupplierSane"/>
+        />
 
 
 

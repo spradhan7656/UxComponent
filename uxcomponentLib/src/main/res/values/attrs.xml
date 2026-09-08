@@ -21,24 +21,53 @@
     </declare-styleable>
 
     <declare-styleable name="CustomButton">
+
+        <!-- Text -->
         <attr name="cb_text" format="string" />
+        <attr name="cb_loadingText" format="string" />
 
-        <attr
-            name="cb_loadingText"
-            format="string" />
+        <!-- Text appearance -->
+        <attr name="cb_textColor" format="color" />
+        <attr name="cb_loadingTextColor" format="color" />
+        <attr name="cb_textSize" format="dimension" />
 
-        <attr
-            name="cb_textColor"
-            format="color" />
+        <!-- Button state -->
+        <attr name="cb_enabled" format="boolean" />
+        <attr name="cb_loading" format="boolean" />
 
-        <attr
-            name="cb_loadingTextColor"
-            format="color" />
+        <!-- Icons -->
+        <attr name="cb_startIcon" format="reference" />
+        <attr name="cb_endIcon" format="reference" />
 
-        <!-- State -->
-        <attr
-            name="cb_enabled"
-            format="boolean" />
+        <!-- Gradient -->
+        <attr name="cb_gradientColorStart" format="color" />
+        <attr name="cb_gradientColorEnd" format="color" />
+        <attr name="cb_gradientOrientation" format="enum">
+            <enum name="leftRight" value="0" />
+            <enum name="rightLeft" value="1" />
+            <enum name="topBottom" value="2" />
+            <enum name="bottomTop" value="3" />
+        </attr>
+
+        <!-- Solid color -->
+        <attr name="cb_backgroundColor" format="color" />
+
+        <!-- Shape -->
+        <attr name="cb_cornerRadius" format="dimension" />
+
+        <attr name="cb_topLeftRadius" format="dimension" />
+        <attr name="cb_topRightRadius" format="dimension" />
+        <attr name="cb_bottomRightRadius" format="dimension" />
+        <attr name="cb_bottomLeftRadius" format="dimension" />
+
+        <!-- Stroke -->
+        <attr name="cb_strokeWidth" format="dimension" />
+        <attr name="cb_strokeColor" format="color" />
+        <attr name="cb_strokeDashWidth" format="dimension" />
+        <attr name="cb_strokeDashGap" format="dimension" />
+
+        <!-- Progress -->
+        <attr name="cb_progressSize" format="dimension" />
 
     </declare-styleable>
 </resources>
