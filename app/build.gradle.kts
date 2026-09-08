@@ -5,7 +5,7 @@ plugins {
 android {
     namespace = "com.spradhan.uxcomponent"
     compileSdk {
-        version = release(37) {
+        version = release(36) {
             minorApiLevel = 1
         }
     }
