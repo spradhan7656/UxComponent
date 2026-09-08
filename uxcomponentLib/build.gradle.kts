@@ -7,7 +7,7 @@ android {
     namespace = "com.spradhan.uxcomponentLib"
 
     compileSdk {
-        version = release(36) {
+        version = release(37) {
             minorApiLevel = 1
         }
     }
@@ -48,7 +48,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.spradhan7656"
             artifactId = "uxcomponentLib"
-            version = "1.0.0"
+            version = "1.0.3"
 
             afterEvaluate {
                 from(components["release"])
