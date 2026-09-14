@@ -25,11 +25,9 @@
             android:id="@+id/btnStartIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginEnd="10dp"
             android:contentDescription="@null"
             android:scaleType="centerInside"
             android:visibility="gone" />
-
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="20dp"
@@ -53,7 +51,6 @@
             android:id="@+id/btnEndIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_marginStart="10dp"
             android:contentDescription="@null"
             android:scaleType="centerInside"
             android:visibility="gone" />

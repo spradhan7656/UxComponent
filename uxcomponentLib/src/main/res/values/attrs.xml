@@ -75,5 +75,16 @@
         <attr name="cb_unpressedGlowSize" format="dimension" />
         <attr name="cb_pressedGlowSize" format="dimension" />
 
+        <attr name="cb_startIconTint" format="color" />
+        <attr name="cb_endIconTint" format="color" />
+
+        <!-- Icon size -->
+        <attr name="cb_startIconSize" format="dimension" />
+        <attr name="cb_endIconSize" format="dimension" />
+
+        <!-- Icon margin (space between icon and text) -->
+        <attr name="cb_startIconMargin" format="dimension" />
+        <attr name="cb_endIconMargin" format="dimension" />
+
     </declare-styleable>
 </resources>
