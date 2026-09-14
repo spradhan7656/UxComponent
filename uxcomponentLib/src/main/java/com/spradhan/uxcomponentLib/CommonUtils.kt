@@ -1,9 +1,17 @@
 package com.spradhan.uxcomponentLib
 
+import android.R.attr.strokeColor
+import android.R.attr.strokeWidth
 import android.content.Context
+import android.content.res.Resources
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.RectF
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
+import android.view.View.LAYER_TYPE_SOFTWARE
 
 object CommonUtils {
     fun createDynamicGradient(
@@ -104,6 +112,84 @@ object CommonUtils {
 
                 setStroke(widthPx, strokeColor, dashWidth, dashGap)
             }
+        }
+    }
+    fun createGlowDrawable(
+        background: Drawable,
+        glowColor: Int,
+        glowSize: Float,
+        cornerRadius: Float
+    ): Drawable {
+
+        val glowDrawable = object : Drawable() {
+
+            private val paint =
+                Paint(Paint.ANTI_ALIAS_FLAG)
+
+            override fun draw(canvas: Canvas) {
+
+                val rect = RectF(
+                    bounds.left.toFloat(),
+                    bounds.top.toFloat(),
+                    bounds.right.toFloat(),
+                    bounds.bottom.toFloat()
+                )
+
+                paint.apply {
+                    style = Paint.Style.FILL
+                    isAntiAlias = true
+                    color = Color.TRANSPARENT
+
+                    setShadowLayer(
+                        glowSize,
+                        0f,
+                        0f,
+                        glowColor
+                    )
+                }
+
+                canvas.drawRoundRect(
+                    rect,
+                    cornerRadius,
+                    cornerRadius,
+                    paint
+                )
+
+                paint.clearShadowLayer()
+
+                background.bounds = bounds
+                background.draw(canvas)
+            }
+
+            override fun setAlpha(alpha: Int) {
+                paint.alpha = alpha
+                background.alpha = alpha
+            }
+
+            override fun setColorFilter(
+                colorFilter: android.graphics.ColorFilter?
+            ) {
+                paint.colorFilter = colorFilter
+                background.colorFilter = colorFilter
+            }
+
+            override fun getOpacity(): Int =
+                android.graphics.PixelFormat.TRANSLUCENT
+        }
+
+        return android.graphics.drawable.LayerDrawable(
+            arrayOf(glowDrawable)
+        ).apply {
+
+            val inset = glowSize.toInt()
+
+            setLayerInset(
+                0,
+                inset,
+                inset,
+                inset,
+                inset
+            )
         }
     }
 }

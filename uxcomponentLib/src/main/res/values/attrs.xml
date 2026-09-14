@@ -31,6 +31,8 @@
         <attr name="cb_loadingTextColor" format="color" />
         <attr name="cb_textSize" format="dimension" />
 
+        <attr name="cb_progressColor" format="color" />
+
         <!-- Button state -->
         <attr name="cb_enabled" format="boolean" />
         <attr name="cb_loading" format="boolean" />
@@ -68,6 +70,10 @@
 
         <!-- Progress -->
         <attr name="cb_progressSize" format="dimension" />
+
+        <attr name="cb_glowColor" format="color" />
+        <attr name="cb_unpressedGlowSize" format="dimension" />
+        <attr name="cb_pressedGlowSize" format="dimension" />
 
     </declare-styleable>
 </resources>

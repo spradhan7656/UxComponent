@@ -1,13 +1,17 @@
 package com.spradhan.uxcomponentLib
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.withStyledAttributes
 import com.spradhan.uxcomponentLib.databinding.AnimatedButtonBinding
+import kotlin.math.max
 
 class CustomButton @JvmOverloads constructor(
     context: Context,
@@ -51,12 +55,23 @@ class CustomButton @JvmOverloads constructor(
     private var gradientOrientation =
         GradientDrawable.Orientation.LEFT_RIGHT
 
+    private var progressColor = Color.WHITE
+
+    private var glowColor = Color.TRANSPARENT
+
+    private var unpressedGlowSize = 0f
+
+    private var pressedGlowSize = 0f
+
+    private var isButtonPressed = false
+    private var baseBackground: Drawable? = null
+
     init {
 
         readAttributes(context, attrs)
 
         applyBackground()
-
+        setupGlowTouch()
         updateUI()
     }
 
@@ -86,11 +101,22 @@ class CustomButton @JvmOverloads constructor(
                     Color.WHITE
                 )
 
+
+
             loadingTextColor =
                 getColor(
                     R.styleable.CustomButton_cb_loadingTextColor,
                     textColor
                 )
+
+            progressColor =
+                getColor(
+                    R.styleable.CustomButton_cb_progressColor,
+                    Color.WHITE
+                )
+
+            binding.progressBar.indeterminateTintList =
+                ColorStateList.valueOf(progressColor)
 
             gradientStart =
                 getColor(
@@ -170,6 +196,24 @@ class CustomButton @JvmOverloads constructor(
                     0
                 )
 
+            glowColor =
+                getColor(
+                    R.styleable.CustomButton_cb_glowColor,
+                    Color.TRANSPARENT
+                )
+
+            unpressedGlowSize =
+                getDimension(
+                    R.styleable.CustomButton_cb_unpressedGlowSize,
+                    0f
+                )
+
+            pressedGlowSize =
+                getDimension(
+                    R.styleable.CustomButton_cb_pressedGlowSize,
+                    0f
+                )
+
             gradientOrientation =
                 when (orientation) {
 
@@ -215,6 +259,30 @@ class CustomButton @JvmOverloads constructor(
             if (endIcon != 0) {
                 binding.btnEndIcon.setImageResource(endIcon)
             }
+        }
+    }
+
+    private fun setupGlowTouch() {
+
+        binding.clButton.setOnTouchListener { _, event ->
+
+            when (event.action) {
+
+                android.view.MotionEvent.ACTION_DOWN -> {
+                    if (!loading) {
+                        isButtonPressed = true
+                        applyGlow()
+                    }
+                }
+
+                android.view.MotionEvent.ACTION_UP,
+                android.view.MotionEvent.ACTION_CANCEL -> {
+                    isButtonPressed = false
+                    applyGlow()
+                }
+            }
+
+            false
         }
     }
 
@@ -283,10 +351,59 @@ class CustomButton @JvmOverloads constructor(
                     strokeDashGap / density
             )
 
-        binding.clButton.background =
+        baseBackground =
             CommonUtils.createDynamicGradient(
                 context,
                 config
+            )
+        binding.clButton.background = baseBackground
+        applyGlow()
+
+    }
+
+    private fun applyGlow() {
+
+        val background = baseBackground ?: return
+
+        if (glowColor == Color.TRANSPARENT) {
+            binding.clButton.background = background
+            return
+        }
+
+        binding.clButton.setLayerType(
+            View.LAYER_TYPE_SOFTWARE,
+            null
+        )
+
+        val glowSize =
+            if (isButtonPressed) {
+                pressedGlowSize
+            } else {
+                unpressedGlowSize
+            }
+
+        val radius =
+            if (cornerRadius > 0f) {
+                cornerRadius
+            } else {
+                max(
+                    max(
+                        topLeftRadius,
+                        topRightRadius
+                    ),
+                    max(
+                        bottomRightRadius,
+                        bottomLeftRadius
+                    )
+                )
+            }
+
+        binding.clButton.background =
+            CommonUtils.createGlowDrawable(
+                background = background,
+                glowColor = glowColor,
+                glowSize = glowSize,
+                cornerRadius = radius
             )
     }
 

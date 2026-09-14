@@ -18,22 +18,34 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-
     <com.spradhan.uxcomponentLib.CustomButton
         android:id="@+id/btnLogin"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        app:cb_text="Login"
-        app:cb_loadingText="Please wait..."
-        app:cb_textColor="#FFFFFF"
-        app:cb_gradientColorStart="#626E75"
-        app:cb_gradientColorEnd="#9098A2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+
+        app:cb_cornerRadius="15dp"
+        app:cb_gradientColorEnd="#244F85"
+
+        app:cb_gradientColorStart="#7C2285"
         app:cb_gradientOrientation="leftRight"
-        app:cb_cornerRadius="25dp"
-        app:cb_strokeWidth="1dp"
+
+        app:cb_loadingText="Please wait..."
+        app:cb_startIcon="@drawable/login_ic"
         app:cb_strokeColor="#C4BFBF"
-        app:cb_loading="false" />
+
+        app:cb_strokeWidth="1dp"
+
+        app:cb_text="Login"
+
+        app:cb_textColor="#FFFFFF"
+
+        />
 
 
+    <com.spradhan.uxcomponentLib.SpinnerField
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
 
 </LinearLayout>
