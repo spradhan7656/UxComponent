@@ -259,6 +259,46 @@ class CustomButton @JvmOverloads constructor(
             if (endIcon != 0) {
                 binding.btnEndIcon.setImageResource(endIcon)
             }
+
+            val startIconTint = getColor(R.styleable.CustomButton_cb_startIconTint, Int.MAX_VALUE)
+            if (startIconTint != Int.MAX_VALUE) {
+                binding.btnStartIcon.imageTintList = ColorStateList.valueOf(startIconTint)
+            }
+
+            val endIconTint = getColor(R.styleable.CustomButton_cb_endIconTint, Int.MAX_VALUE)
+            if (endIconTint != Int.MAX_VALUE) {
+                binding.btnEndIcon.imageTintList = ColorStateList.valueOf(endIconTint)
+            }
+
+            val startIconSize = getDimensionPixelSize(R.styleable.CustomButton_cb_startIconSize, -1)
+            if (startIconSize != -1) {
+                val lp = binding.btnStartIcon.layoutParams
+                lp.width = startIconSize
+                lp.height = startIconSize
+                binding.btnStartIcon.layoutParams = lp
+            }
+
+            val endIconSize = getDimensionPixelSize(R.styleable.CustomButton_cb_endIconSize, -1)
+            if (endIconSize != -1) {
+                val lp = binding.btnEndIcon.layoutParams
+                lp.width = endIconSize
+                lp.height = endIconSize
+                binding.btnEndIcon.layoutParams = lp
+            }
+
+            val startIconMargin = getDimensionPixelSize(R.styleable.CustomButton_cb_startIconMargin, -1)
+            if (startIconMargin != -1) {
+                val lp = binding.btnStartIcon.layoutParams as android.widget.LinearLayout.LayoutParams
+                lp.marginEnd = startIconMargin
+                binding.btnStartIcon.layoutParams = lp
+            }
+
+            val endIconMargin = getDimensionPixelSize(R.styleable.CustomButton_cb_endIconMargin, -1)
+            if (endIconMargin != -1) {
+                val lp = binding.btnEndIcon.layoutParams as android.widget.LinearLayout.LayoutParams
+                lp.marginStart = endIconMargin
+                binding.btnEndIcon.layoutParams = lp
+            }
         }
     }
 

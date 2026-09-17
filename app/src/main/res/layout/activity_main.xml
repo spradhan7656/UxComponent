@@ -1,48 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:fillViewport="true"
+    android:background="@color/white"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        android:padding="16dp">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Component Showcase Form"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
 
-    <com.spradhan.uxcomponentLib.CustomButton
-        android:id="@+id/btnLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
+        <!-- Custom InputField Component -->
+        <com.spradhan.uxcomponentLib.InputField
+            android:id="@+id/inputUserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
 
-        app:cb_cornerRadius="15dp"
-        app:cb_gradientColorEnd="#244F85"
+        <!-- Custom SpinnerField Component -->
+        <com.spradhan.uxcomponentLib.SpinnerField
+            android:id="@+id/spinnerRole"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp" />
 
-        app:cb_gradientColorStart="#7C2285"
-        app:cb_gradientOrientation="leftRight"
+        <!-- Custom CustomButton Component -->
+        <com.spradhan.uxcomponentLib.CustomButton
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cb_cornerRadius="12dp"
+            app:cb_gradientColorStart="#7C2285"
+            app:cb_gradientColorEnd="#244F85"
+            app:cb_gradientOrientation="leftRight"
+            app:cb_loadingText="Validating profile..."
+            app:cb_startIcon="@drawable/login_ic"
+            app:cb_startIconTint="@color/white"
+            app:cb_startIconMargin="10dp"
+            app:cb_text=" Details"
+            app:cb_textColor="#FFFFFF" />
 
-        app:cb_loadingText="Please wait..."
-        app:cb_startIcon="@drawable/login_ic"
-        app:cb_strokeColor="#C4BFBF"
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Team Members Queue"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
 
-        app:cb_strokeWidth="1dp"
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="350dp">
 
-        app:cb_text="Login"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-        app:cb_textColor="#FFFFFF"
+            <com.spradhan.uxcomponentLib.SkeletonLayout
+                android:id="@+id/skeletonLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:skeletonAutoStart="true">
 
-        />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <include layout="@layout/item_profile" />
+                    <include layout="@layout/item_profile" />
+                    <include layout="@layout/item_profile" />
+                </LinearLayout>
 
+            </com.spradhan.uxcomponentLib.SkeletonLayout>
 
+        </FrameLayout>
 
-
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

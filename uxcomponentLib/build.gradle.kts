@@ -49,7 +49,6 @@ publishing {
             groupId = "com.github.spradhan7656"
             artifactId = "uxcomponentLib"
             version = "1.0.9"
-
             afterEvaluate {
                 from(components["release"])
             }

@@ -3,12 +3,14 @@ package com.spradhan.uxcomponent
 import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.lifecycle.lifecycleScope
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.spradhan.uxcomponentLib.CustomButton
 import com.spradhan.uxcomponentLib.GradientConfig
+import com.spradhan.uxcomponentLib.SkeletonLayout
 import com.spradhan.uxcomponentLib.SnackbarBuilder
 import com.spradhan.uxcomponentLib.SnackbarDuration
 import com.spradhan.uxcomponentLib.SnackbarPosition
@@ -29,6 +31,78 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         val button = findViewById<CustomButton>(R.id.btnLogin)
+        val inputUserName = findViewById<com.spradhan.uxcomponentLib.InputField>(R.id.inputUserName)
+        val spinnerRole = findViewById<com.spradhan.uxcomponentLib.SpinnerField>(R.id.spinnerRole)
+
+        // Setup custom InputField
+        inputUserName.setLabel("Full Name")
+            .setHint("Enter your name")
+            .setRequired(true)
+            .addValidator("Name is too short") { it.length >= 3 }
+
+        // Setup custom SpinnerField
+        val roles = listOf("Android Engineer", "Product Designer", "Project Manager", "QA Analyst")
+        spinnerRole.setLabel("Primary Work Role")
+            .setRequired(true)
+            .setItems(roles)
+
+        val skeleton = findViewById<SkeletonLayout>(R.id.skeletonLayout)
+        val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerView)
+
+        // Programmatically control the animation time and styles from the class file
+        skeleton.setShimmerDuration(1500L)
+        skeleton.setCornerRadius(12f)
+        skeleton.setBaseColor(Color.parseColor("#E0E0E0"))
+        skeleton.setHighlightColor(Color.parseColor("#F5F5F5"))
+
+        // Create dummy list data
+        val dummyData = listOf(
+            Pair("Alex Carter", "Senior Android Developer"),
+            Pair("Beatrice Smith", "UX/UI Product Designer"),
+            Pair("Charles Cooper", "Backend System Engineer"),
+            Pair("Diana Prince", "Product Operations Lead"),
+            Pair("Evan Wright", "DevOps Infrastructure Lead")
+        )
+        val adapter = ProfileAdapter(dummyData)
+        recyclerView.adapter = adapter
+
+        // while loading:
+        skeleton.showSkeleton()
+
+        // Simulate data arriving after 3 seconds, then hide the skeleton and show list
+        lifecycleScope.launch {
+            delay(3000)
+            skeleton.visibility = android.view.View.GONE
+            recyclerView.visibility = android.view.View.VISIBLE
+        }
+
+        button.setOnClickListener {
+            val isNameValid = inputUserName.validate()
+            val isRoleValid = spinnerRole.validate()
+
+            if (isNameValid && isRoleValid) {
+                button.setLoading(true)
+                lifecycleScope.launch {
+                    delay(1500)
+                    button.setLoading(false)
+
+                    SnackbarBuilder(this@MainActivity)
+                        .message("Profile metadata validated successfully!")
+                        .type(SnackbarType.SUCCESS)
+                        .position(SnackbarPosition.BOTTOM)
+                        .show()
+                }
+            } else {
+                SnackbarBuilder(this@MainActivity)
+                    .message("Please fill all required inputs correctly.")
+                    .solidColor(Color.RED)
+                    .position(SnackbarPosition.BOTTOM)
+                    .show()
+            }
+        }
+
+// once data arrives, populate your views as normal, then:
+
 //        val loadingBar = SnackbarBuilder(this)
 //            .message("Syncing your data…")
 //            .gradient(

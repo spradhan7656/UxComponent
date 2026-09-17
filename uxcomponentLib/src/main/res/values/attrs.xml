@@ -87,4 +87,13 @@
         <attr name="cb_endIconMargin" format="dimension" />
 
     </declare-styleable>
+
+
+    <declare-styleable name="SkeletonLayout">
+        <attr name="skeletonBaseColor" format="color" />
+        <attr name="skeletonHighlightColor" format="color" />
+        <attr name="skeletonCornerRadius" format="dimension" />
+        <attr name="skeletonShimmerDurationMs" format="integer" />
+        <attr name="skeletonAutoStart" format="boolean" />
+    </declare-styleable>
 </resources>
