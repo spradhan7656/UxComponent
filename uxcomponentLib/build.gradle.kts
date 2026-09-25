@@ -6,7 +6,6 @@ plugins {
 
 android {
     namespace = "com.spradhan.uxcomponentLib"
-
     compileSdk =36
 
     defaultConfig {
