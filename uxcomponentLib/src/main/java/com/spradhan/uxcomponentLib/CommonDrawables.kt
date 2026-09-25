@@ -1,13 +1,14 @@
 package com.spradhan.uxcomponentLib
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import androidx.core.content.ContextCompat
 
 
 object CommonDrawables {
 
-    fun getCurvedGreyBg(mCtx : Context) : GradientDrawable {
+    fun getCurvedGreyBg(mCtx : Context) : Drawable {
         return CommonUtils.createDynamicGradient(mCtx,
             GradientConfig(
                 solidColor = ContextCompat.getColor(mCtx, R.color.light_grey),
@@ -15,7 +16,7 @@ object CommonDrawables {
             ))
     }
 
-    fun getGreyCurvedWhiteBg(mCtx : Context) : GradientDrawable {
+    fun getGreyCurvedWhiteBg(mCtx : Context) : Drawable {
         return CommonUtils.createDynamicGradient(mCtx,
             GradientConfig(
                 solidColor = ContextCompat.getColor(mCtx, R.color.white),
@@ -25,7 +26,7 @@ object CommonDrawables {
             ))
     }
 
-    fun getCurvedLightRedBg(mCtx : Context) : GradientDrawable {
+    fun getCurvedLightRedBg(mCtx : Context) : Drawable {
         return CommonUtils.createDynamicGradient(mCtx,
             GradientConfig(
                 solidColor = ContextCompat.getColor(mCtx, R.color.light_red),
@@ -33,7 +34,7 @@ object CommonDrawables {
             ))
     }
 
-    fun getDottedGreyBg(mCtx : Context) : GradientDrawable {
+    fun getDottedGreyBg(mCtx : Context) : Drawable {
         return CommonUtils.createDynamicGradient(mCtx,GradientConfig(
             cornerRadiusDp = 5f,
             strokeWidthDp = 1f,
@@ -44,7 +45,7 @@ object CommonDrawables {
         ))
     }
 
-    fun getDottedYellowBg(mCtx : Context) : GradientDrawable {
+    fun getDottedYellowBg(mCtx : Context) : Drawable {
         return CommonUtils.createDynamicGradient(mCtx,GradientConfig(
             cornerRadiusDp = 5f,
             strokeWidthDp = 2f,
@@ -55,7 +56,7 @@ object CommonDrawables {
         ))
     }
 
-    fun getCircleYellowBg(mCtx : Context) : GradientDrawable {
+    fun getCircleYellowBg(mCtx : Context) : Drawable {
         return CommonUtils.createDynamicGradient(mCtx,
             GradientConfig(
                 solidColor = ContextCompat.getColor(mCtx, R.color.yellow),
@@ -63,7 +64,7 @@ object CommonDrawables {
             ))
     }
 
-    fun getCircleAppThemeBg(mCtx : Context) : GradientDrawable {
+    fun getCircleAppThemeBg(mCtx : Context) : Drawable {
         return CommonUtils.createDynamicGradient(mCtx,
             GradientConfig(
                 solidColor = ContextCompat.getColor(mCtx, R.color.app_color_tddcol_uni),
@@ -71,7 +72,7 @@ object CommonDrawables {
             ))
     }
 
-    fun getCurvedYellowBg(mCtx : Context) : GradientDrawable {
+    fun getCurvedYellowBg(mCtx : Context) : Drawable {
         return CommonUtils.createDynamicGradient(mCtx,
             GradientConfig(
                 solidColor = ContextCompat.getColor(mCtx, R.color.yellow),
@@ -79,7 +80,7 @@ object CommonDrawables {
             ))
     }
 
-    fun getCurvedAppThemeBg(mCtx : Context) : GradientDrawable {
+    fun getCurvedAppThemeBg(mCtx : Context) : Drawable {
         return CommonUtils.createDynamicGradient(mCtx,
             GradientConfig(
                 solidColor = ContextCompat.getColor(mCtx, R.color.app_color),
@@ -87,7 +88,7 @@ object CommonDrawables {
             ))
     }
 
-    fun getCurvedGreenBg(mCtx : Context) : GradientDrawable {
+    fun getCurvedGreenBg(mCtx : Context) : Drawable {
         return CommonUtils.createDynamicGradient(mCtx,
             GradientConfig(
                 solidColor = ContextCompat.getColor(mCtx, R.color.text_green),
@@ -95,7 +96,7 @@ object CommonDrawables {
             ))
     }
 
-    fun getCircleGreenBg(mCtx : Context) : GradientDrawable {
+    fun getCircleGreenBg(mCtx : Context) : Drawable {
         return CommonUtils.createDynamicGradient(mCtx,
             GradientConfig(
                 shape = GradientDrawable.OVAL,
@@ -104,7 +105,7 @@ object CommonDrawables {
             ))
     }
 
-    fun getCurvedLigtGreenBg(mCtx : Context) : GradientDrawable {
+    fun getCurvedLigtGreenBg(mCtx : Context) : Drawable {
         return CommonUtils.createDynamicGradient(mCtx,
             GradientConfig(
                 solidColor = ContextCompat.getColor(mCtx, R.color.text_green_opacity10),

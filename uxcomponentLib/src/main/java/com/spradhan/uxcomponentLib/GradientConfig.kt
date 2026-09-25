@@ -20,13 +20,27 @@ data class GradientConfig(
 
     val cornerRadiusDp: Float = 0f,
     val cornerRadii: FloatArray? = null,
+
+    // --- Solid stroke (used when strokeColors is null) ---
     val strokeWidthDp: Float = 0f,
     @ColorInt val strokeColor: Int = Color.TRANSPARENT,
     val strokeDashWidthDp: Float = 0f,
     val strokeDashGapDp: Float = 0f,
+
+    // --- Gradient stroke (used when strokeColors is non-null/non-empty) ---
+    val strokeColors: IntArray? = null,
+    val strokeGradientType: Int = GradientDrawable.LINEAR_GRADIENT,
+    val strokeGradientOrientation: GradientDrawable.Orientation? = GradientDrawable.Orientation.LEFT_RIGHT,
+    @FloatRange(from = 0.0, to = 1.0) val strokePositions: FloatArray? = null,
+
     val gradientType: Int = GradientDrawable.LINEAR_GRADIENT,
     // Radial/sweep extras
     val gradientCenterX: Float = 0.5f,
     val gradientCenterY: Float = 0.5f,
-    val gradientRadius: Float = 0.5f
+    val gradientRadius: Float = 0.5f,
+    // --- Elevation / shadow ---
+    val elevationDp: Float = 0f,
+    @ColorInt val elevationShadowColor: Int = 0x40000000, // translucent black
+    val shadowSpreadDp: Float = 2f,
+    val shadowOffsetYDp: Float = 2f
 )

@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.view.WindowManager
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -21,23 +22,24 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-class SearchableSpinnerDialog<T>(
+class SpinnerDialogSearchableWithMultiCheck<T>(
     context: Context
 ) : Dialog(context) {
 
-    private var title: String = "Select Option"
+    private var title: String = "Select Options"
     private var searchHint: String = "Search..."
+    private var selectAllLabel: String = "Select All"
+    private var clearAllLabel: String = "Clear All"
+
     private var items: List<T> = emptyList()
+    private val selectedPositions: MutableSet<Int> = mutableSetOf()
     private var itemFormatter: ((T) -> String)? = null
 
-    private var selectedPosition: Int = -1
-    private var selectedItem: T? = null
-
-    private var onItemSelectedListener: ((item: T, position: Int) -> Unit)? = null
+    private var onItemsSelectedListener: ((selectedItems: List<T>, selectedPositions: List<Int>) -> Unit)? = null
     private var onDismissCallback: (() -> Unit)? = null
 
     @ColorInt
-    private var checkmarkColor: Int = ContextCompat.getColor(context, R.color.app_deep_blue)
+    private var accentColor: Int = ContextCompat.getColor(context, R.color.app_deep_blue)
 
     @ColorInt
     private var titleColor: Int = Color.BLACK
@@ -46,19 +48,24 @@ class SearchableSpinnerDialog<T>(
 
     private lateinit var tvTitle: TextView
     private lateinit var ivClose: ImageView
+    private lateinit var tvSelectAll: TextView
+    private lateinit var tvClearAll: TextView
+    private lateinit var tvSelectionCount: TextView
     private lateinit var etSearch: EditText
     private lateinit var ivClearSearch: ImageView
     private lateinit var rvItems: RecyclerView
     private lateinit var tvEmptyState: TextView
+    private lateinit var btnCancel: TextView
+    private lateinit var btnApply: TextView
     private lateinit var searchContainer: View
     private lateinit var dialogContainer: View
 
-    private lateinit var adapter: SearchableSpinnerAdapter
+    private lateinit var adapter: MultiSelectAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
-        setContentView(R.layout.dialog_searchable_spinner)
+        setContentView(R.layout.dialog_searchable_multi_spinner)
 
         window?.apply {
             setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -72,15 +79,21 @@ class SearchableSpinnerDialog<T>(
         applyConfigurations()
         setupListeners()
         setupRecyclerView()
+        updateSelectionCounter()
     }
 
     private fun initViews() {
         tvTitle = findViewById(R.id.tvDialogTitle)
         ivClose = findViewById(R.id.ivClose)
+        tvSelectAll = findViewById(R.id.tvSelectAll)
+        tvClearAll = findViewById(R.id.tvClearAll)
+        tvSelectionCount = findViewById(R.id.tvSelectionCount)
         etSearch = findViewById(R.id.etSearch)
         ivClearSearch = findViewById(R.id.ivClearSearch)
         rvItems = findViewById(R.id.rvItems)
         tvEmptyState = findViewById(R.id.tvEmptyState)
+        btnCancel = findViewById(R.id.btnCancel)
+        btnApply = findViewById(R.id.btnApply)
         searchContainer = findViewById(R.id.searchContainer)
         dialogContainer = findViewById(R.id.dialogContainer)
     }
@@ -89,8 +102,12 @@ class SearchableSpinnerDialog<T>(
         tvTitle.text = title
         tvTitle.setTextColor(titleColor)
         etSearch.hint = searchHint
+        tvSelectAll.text = selectAllLabel
+        tvClearAll.text = clearAllLabel
 
-        // Style container with rounded corners and white background
+        tvSelectAll.setTextColor(accentColor)
+        btnApply.setTextColor(accentColor)
+
         val bgDrawable = CommonUtils.createDynamicGradient(
             context,
             GradientConfig(
@@ -100,7 +117,6 @@ class SearchableSpinnerDialog<T>(
         )
         dialogContainer.background = bgDrawable
 
-        // Style search box container
         val searchBg = CommonUtils.createDynamicGradient(
             context,
             GradientConfig(
@@ -114,8 +130,24 @@ class SearchableSpinnerDialog<T>(
     }
 
     private fun setupListeners() {
-        ivClose.setOnClickListener {
+        ivClose.setOnClickListener { dismiss() }
+        btnCancel.setOnClickListener { dismiss() }
+
+        btnApply.setOnClickListener {
+            val selectedList = items.filterIndexed { index, _ -> index in selectedPositions }
+            val positionsList = selectedPositions.toList().sorted()
+            onItemsSelectedListener?.invoke(selectedList, positionsList)
             dismiss()
+        }
+
+        tvSelectAll.setOnClickListener {
+            adapter.selectAllCurrent()
+        }
+
+        tvClearAll.setOnClickListener {
+            selectedPositions.clear()
+            adapter.notifyDataSetChanged()
+            updateSelectionCounter()
         }
 
         ivClearSearch.setOnClickListener {
@@ -140,12 +172,18 @@ class SearchableSpinnerDialog<T>(
     }
 
     private fun setupRecyclerView() {
-        adapter = SearchableSpinnerAdapter()
+        adapter = MultiSelectAdapter()
         rvItems.layoutManager = LinearLayoutManager(context)
         rvItems.adapter = adapter
     }
 
-    fun setTitle(title: String): SearchableSpinnerDialog<T> {
+    private fun updateSelectionCounter() {
+        val total = items.size
+        val count = selectedPositions.size
+        tvSelectionCount.text = "$count of $total selected"
+    }
+
+    fun setTitle(title: String): SpinnerDialogSearchableWithMultiCheck<T> {
         this.title = title
         if (::tvTitle.isInitialized) {
             tvTitle.text = title
@@ -153,7 +191,7 @@ class SearchableSpinnerDialog<T>(
         return this
     }
 
-    fun setSearchHint(hint: String): SearchableSpinnerDialog<T> {
+    fun setSearchHint(hint: String): SpinnerDialogSearchableWithMultiCheck<T> {
         this.searchHint = hint
         if (::etSearch.isInitialized) {
             etSearch.hint = hint
@@ -161,56 +199,77 @@ class SearchableSpinnerDialog<T>(
         return this
     }
 
+    fun setSelectAllText(text: String): SpinnerDialogSearchableWithMultiCheck<T> {
+        this.selectAllLabel = text
+        if (::tvSelectAll.isInitialized) {
+            tvSelectAll.text = text
+        }
+        return this
+    }
+
+    fun setClearAllText(text: String): SpinnerDialogSearchableWithMultiCheck<T> {
+        this.clearAllLabel = text
+        if (::tvClearAll.isInitialized) {
+            tvClearAll.text = text
+        }
+        return this
+    }
+
     fun setItems(
         newItems: List<T>,
         formatter: ((T) -> String)? = null
-    ): SearchableSpinnerDialog<T> {
+    ): SpinnerDialogSearchableWithMultiCheck<T> {
         this.items = newItems
         this.itemFormatter = formatter
         if (::rvItems.isInitialized) {
             adapter.updateItems(newItems)
+            updateSelectionCounter()
         }
         return this
     }
 
-    fun setSelection(position: Int): SearchableSpinnerDialog<T> {
-        this.selectedPosition = position
-        if (position in items.indices) {
-            this.selectedItem = items[position]
+    fun setSelectedPositions(positions: Collection<Int>): SpinnerDialogSearchableWithMultiCheck<T> {
+        this.selectedPositions.clear()
+        this.selectedPositions.addAll(positions.filter { it in items.indices })
+        if (::rvItems.isInitialized) {
+            adapter.notifyDataSetChanged()
+            updateSelectionCounter()
+        }
+        return this
+    }
+
+    fun setSelectedItems(selectedItems: Collection<T>): SpinnerDialogSearchableWithMultiCheck<T> {
+        this.selectedPositions.clear()
+        items.forEachIndexed { index, item ->
+            if (item in selectedItems) {
+                this.selectedPositions.add(index)
+            }
         }
         if (::rvItems.isInitialized) {
             adapter.notifyDataSetChanged()
+            updateSelectionCounter()
         }
         return this
     }
 
-    fun setSelectedItem(item: T?): SearchableSpinnerDialog<T> {
-        this.selectedItem = item
-        this.selectedPosition = items.indexOf(item)
-        if (::rvItems.isInitialized) {
-            adapter.notifyDataSetChanged()
-        }
+    fun setOnItemsSelectedListener(
+        listener: (selectedItems: List<T>, selectedPositions: List<Int>) -> Unit
+    ): SpinnerDialogSearchableWithMultiCheck<T> {
+        this.onItemsSelectedListener = listener
         return this
     }
 
-    fun setOnItemSelectedListener(
-        listener: (item: T, position: Int) -> Unit
-    ): SearchableSpinnerDialog<T> {
-        this.onItemSelectedListener = listener
-        return this
-    }
-
-    fun setOnDismissCallback(callback: () -> Unit): SearchableSpinnerDialog<T> {
+    fun setOnDismissCallback(callback: () -> Unit): SpinnerDialogSearchableWithMultiCheck<T> {
         this.onDismissCallback = callback
         return this
     }
 
-    fun setCheckmarkColor(@ColorInt color: Int): SearchableSpinnerDialog<T> {
-        this.checkmarkColor = color
+    fun setAccentColor(@ColorInt color: Int): SpinnerDialogSearchableWithMultiCheck<T> {
+        this.accentColor = color
         return this
     }
 
-    fun setTitleColor(@ColorInt color: Int): SearchableSpinnerDialog<T> {
+    fun setTitleColor(@ColorInt color: Int): SpinnerDialogSearchableWithMultiCheck<T> {
         this.titleColor = color
         if (::tvTitle.isInitialized) {
             tvTitle.setTextColor(color)
@@ -218,15 +277,16 @@ class SearchableSpinnerDialog<T>(
         return this
     }
 
-    fun setCornerRadius(radiusDp: Float): SearchableSpinnerDialog<T> {
+    fun setCornerRadius(radiusDp: Float): SpinnerDialogSearchableWithMultiCheck<T> {
         this.cornerRadiusDp = radiusDp
         return this
     }
 
-    private inner class SearchableSpinnerAdapter :
-        RecyclerView.Adapter<SearchableSpinnerAdapter.ItemViewHolder>() {
+    private inner class MultiSelectAdapter :
+        RecyclerView.Adapter<MultiSelectAdapter.ItemViewHolder>() {
 
-        private var filteredItems: MutableList<Pair<T, Int>> = items.mapIndexed { index, item -> Pair(item, index) }.toMutableList()
+        private var filteredItems: MutableList<Pair<T, Int>> =
+            items.mapIndexed { index, item -> Pair(item, index) }.toMutableList()
 
         fun updateItems(newItems: List<T>) {
             items = newItems
@@ -253,43 +313,48 @@ class SearchableSpinnerDialog<T>(
             notifyDataSetChanged()
         }
 
+        fun selectAllCurrent() {
+            filteredItems.forEach { (_, originalIndex) ->
+                selectedPositions.add(originalIndex)
+            }
+            notifyDataSetChanged()
+            updateSelectionCounter()
+        }
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
             val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_searchable_spinner, parent, false)
+                .inflate(R.layout.item_searchable_multi_spinner, parent, false)
             return ItemViewHolder(view)
         }
 
         override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
             val (item, originalIndex) = filteredItems[position]
             val displayText = itemFormatter?.invoke(item) ?: item.toString()
-            val isSelected = (originalIndex == selectedPosition) || (item == selectedItem)
+            val isChecked = originalIndex in selectedPositions
 
             holder.tvTitle.text = displayText
+            holder.cbItem.isChecked = isChecked
+            holder.cbItem.buttonTintList = ColorStateList.valueOf(accentColor)
 
-            if (isSelected) {
-                holder.ivCheckmark.visibility = View.VISIBLE
-                holder.ivCheckmark.imageTintList = ColorStateList.valueOf(checkmarkColor)
-                holder.tvTitle.setTextColor(checkmarkColor)
-            } else {
-                holder.ivCheckmark.visibility = View.GONE
-                holder.tvTitle.setTextColor(Color.BLACK)
+            val listener = View.OnClickListener {
+                if (isChecked) {
+                    selectedPositions.remove(originalIndex)
+                } else {
+                    selectedPositions.add(originalIndex)
+                }
+                notifyItemChanged(position)
+                updateSelectionCounter()
             }
 
-            holder.itemView.setOnClickListener {
-                selectedPosition = originalIndex
-                selectedItem = item
-                notifyDataSetChanged()
-
-                onItemSelectedListener?.invoke(item, originalIndex)
-                dismiss()
-            }
+            holder.itemView.setOnClickListener(listener)
+            holder.cbItem.setOnClickListener(listener)
         }
 
         override fun getItemCount(): Int = filteredItems.size
 
         inner class ItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val cbItem: CheckBox = itemView.findViewById(R.id.cbItem)
             val tvTitle: TextView = itemView.findViewById(R.id.tvItemTitle)
-            val ivCheckmark: ImageView = itemView.findViewById(R.id.ivCheckmark)
         }
     }
 }

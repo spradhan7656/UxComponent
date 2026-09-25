@@ -32,19 +32,63 @@ class MainActivity : AppCompatActivity() {
         }
         val button = findViewById<CustomButton>(R.id.btnLogin)
         val inputUserName = findViewById<com.spradhan.uxcomponentLib.InputField>(R.id.inputUserName)
+        val inputPassword = findViewById<com.spradhan.uxcomponentLib.InputField>(R.id.inputPassword)
         val spinnerRole = findViewById<com.spradhan.uxcomponentLib.SpinnerField>(R.id.spinnerRole)
+        val spinnerDepartment = findViewById<com.spradhan.uxcomponentLib.SpinnerField>(R.id.spinnerDepartment)
+        val spinnerSkills = findViewById<com.spradhan.uxcomponentLib.SpinnerField>(R.id.spinnerSkills)
+        val horizontalCalendarView = findViewById<com.spradhan.uxcomponentLib.HorizontalCalendarView>(R.id.horizontalCalendarView)
+
+        // Inject sample event dots indicator markers onto specific calendar dates
+        val today = java.util.Date()
+        horizontalCalendarView.addEventDots(today, listOf(Color.RED))
+        
+        val tomorrow = java.util.Date(today.time + (24 * 60 * 60 * 1000))
+        horizontalCalendarView.addEventDots(tomorrow, listOf(Color.RED, Color.GREEN))
+
+        horizontalCalendarView.setOnDateSelectedListener { selectedDate ->
+            // Date selected callback handler logic
+        }
 
         // Setup custom InputField
-        inputUserName.setLabel("Full Name")
-            .setHint("Enter your name")
-            .setRequired(true)
+        inputUserName.setLabelFont(R.font.nunito_bold)
+            .setInputFont(R.font.nunito_bold)
             .addValidator("Name is too short") { it.length >= 3 }
+
+        inputPassword.addValidator("Password is too short") { it.length >= 6 }
 
         // Setup custom SpinnerField
         val roles = listOf("Android Engineer", "Product Designer", "Project Manager", "QA Analyst")
         spinnerRole.setLabel("Primary Work Role")
             .setRequired(true)
             .setItems(roles)
+
+        val departments = listOf(
+            "Engineering & Technology",
+            "Product & Design",
+            "Quality Assurance",
+            "Marketing & Growth",
+            "Human Resources",
+            "Finance & Accounting",
+            "Operations & Support",
+            "Legal & Compliance"
+        )
+        spinnerDepartment.setLabel("Department (Searchable)", required = true)
+            .setItems(departments)
+
+        val skills = listOf(
+            "Kotlin",
+            "Java",
+            "Jetpack Compose",
+            "Coroutines",
+            "Flow & LiveData",
+            "Hilt & Dagger",
+            "Room Database",
+            "Retrofit / Ktor",
+            "MVVM / MVI Architecture",
+            "Unit Testing & Espresso"
+        )
+        spinnerSkills.setLabel("Technical Skills (Multi-Check)", required = true)
+            .setItems(skills)
 
         val skeleton = findViewById<SkeletonLayout>(R.id.skeletonLayout)
         val recyclerView = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerView)
@@ -78,26 +122,47 @@ class MainActivity : AppCompatActivity() {
 
         button.setOnClickListener {
             val isNameValid = inputUserName.validate()
+            val isPasswordValid = inputPassword.validate()
             val isRoleValid = spinnerRole.validate()
+            val isDeptValid = spinnerDepartment.validate()
+            val isSkillsValid = spinnerSkills.validate()
 
-            if (isNameValid && isRoleValid) {
+            if (isNameValid && isPasswordValid && isRoleValid && isDeptValid && isSkillsValid) {
                 button.setLoading(true)
                 lifecycleScope.launch {
                     delay(1500)
                     button.setLoading(false)
 
-                    SnackbarBuilder(this@MainActivity)
+                    val snackbar = SnackbarBuilder(this@MainActivity)
                         .message("Profile metadata validated successfully!")
                         .type(SnackbarType.SUCCESS)
                         .position(SnackbarPosition.BOTTOM)
+                        .duration(SnackbarDuration.INDEFINITE)
+                        .endIcon(com.spradhan.uxcomponentLib.R.drawable.ic_eye_close, tint = Color.WHITE) {
+                            // End icon clicked - custom callback executed
+                        }
                         .show()
+
+                    // Demonstrate programmatic hide() function on INDEFINITE snackbar
+                    delay(3500)
+                    snackbar.hide()
                 }
             } else {
-                SnackbarBuilder(this@MainActivity)
+                val errorSnackbar = SnackbarBuilder(this@MainActivity)
                     .message("Please fill all required inputs correctly.")
                     .solidColor(Color.RED)
                     .position(SnackbarPosition.BOTTOM)
+                    .duration(SnackbarDuration.INDEFINITE)
+                    .endIcon(com.spradhan.uxcomponentLib.R.drawable.ic_eye_close, tint = Color.WHITE) {
+                        // End icon action callback executed on click
+                    }
                     .show()
+
+                // Demonstrate programmatic hide() function on INDEFINITE snackbar
+                lifecycleScope.launch {
+                    delay(4000)
+                    errorSnackbar.hide()
+                }
             }
         }
 

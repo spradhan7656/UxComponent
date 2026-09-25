@@ -6,18 +6,126 @@
     <attr name="required" format="boolean"/>
     <attr name="fieldBackground" format="reference"/>
     <attr name="dropdownIcon" format="reference"/>
+    <attr name="isSearchable" format="boolean"/>
+    <attr name="dialogTitle" format="string"/>
+    <attr name="searchHint" format="string"/>
+    <attr name="spHintText" format="string"/>
     <declare-styleable name="InputField">
         <attr name="labelText"/>
         <attr name="hintText"/>
         <attr name="required"/>
         <attr name="fieldBackground"/>
+
+        <!-- Start Icon -->
+        <attr name="startIcon" format="reference" />
+        <attr name="startIconTint" format="color" />
+        <attr name="startIconSize" format="dimension" />
+
+        <!-- End Icon -->
+        <attr name="endIcon" format="reference" />
+        <attr name="endIconTint" format="color" />
+        <attr name="endIconSize" format="dimension" />
+
+        <!-- Password Toggle -->
+        <attr name="passwordToggleEnabled" format="boolean" />
+        <attr name="eyeOpenIcon" format="reference" />
+        <attr name="eyeCloseIcon" format="reference" />
+
+        <!-- Margins -->
+        <attr name="inputMarginVertical" format="dimension" />
+        <attr name="inputMarginHorizontal" format="dimension" />
+        <attr name="startIconMarginStart" format="dimension" />
+        <attr name="startIconMarginEnd" format="dimension" />
+        <attr name="endIconMarginStart" format="dimension" />
+        <attr name="endIconMarginEnd" format="dimension" />
+
+        <!-- Advanced Background & Stroke -->
+        <attr name="inputBackgroundColor" format="color" />
+        <attr name="inputCornerRadius" format="dimension" />
+        <attr name="inputTopLeftRadius" format="dimension" />
+        <attr name="inputTopRightRadius" format="dimension" />
+        <attr name="inputBottomLeftRadius" format="dimension" />
+        <attr name="inputBottomRightRadius" format="dimension" />
+        <attr name="inputStrokeWidth" format="dimension" />
+        <attr name="inputStrokeColor" format="color" />
+        <attr name="inputStrokeDashWidth" format="dimension" />
+        <attr name="inputStrokeDashGap" format="dimension" />
+        <attr name="inputStrokeGradientStart" format="color" />
+        <attr name="inputStrokeGradientEnd" format="color" />
+
+        <!-- Glow Effect -->
+        <attr name="inputGlowColor" format="color" />
+        <attr name="inputGlowSize" format="dimension" />
+
+        <!-- Label & Input Appearance -->
+        <attr name="labelTextColor" format="color" />
+        <attr name="labelTextFontFamily" format="reference|string" />
+        <attr name="inputFontFamily" format="reference|string" />
+        <attr name="fontFamily" format="reference|string" />
+        <attr name="android:fontFamily" />
+        <attr name="android:inputType" />
+        <attr name="labelTextMarginBottom" format="dimension" />
     </declare-styleable>
+
+    <attr name="isMultiSelect" format="boolean"/>
+    <attr name="selectAllText" format="string"/>
+    <attr name="clearAllText" format="string"/>
 
     <declare-styleable name="SpinnerField">
         <attr name="labelText"/>
         <attr name="required"/>
         <attr name="fieldBackground"/>
         <attr name="dropdownIcon"/>
+        <attr name="isSearchable"/>
+        <attr name="isMultiSelect"/>
+        <attr name="dialogTitle"/>
+        <attr name="searchHint"/>
+        <attr name="spHintText"/>
+        <attr name="selectAllText"/>
+        <attr name="clearAllText"/>
+
+        <!-- Start Icon -->
+        <attr name="startIcon" />
+        <attr name="startIconTint" />
+        <attr name="startIconSize" />
+
+        <!-- End Icon / Dropdown Icon -->
+        <attr name="endIcon" />
+        <attr name="endIconTint" />
+        <attr name="endIconSize" />
+
+        <!-- Margins -->
+        <attr name="inputMarginVertical" />
+        <attr name="inputMarginHorizontal" />
+        <attr name="startIconMarginStart" />
+        <attr name="startIconMarginEnd" />
+        <attr name="endIconMarginStart" />
+        <attr name="endIconMarginEnd" />
+
+        <!-- Advanced Background & Stroke -->
+        <attr name="inputBackgroundColor" />
+        <attr name="inputCornerRadius" />
+        <attr name="inputTopLeftRadius" />
+        <attr name="inputTopRightRadius" />
+        <attr name="inputBottomLeftRadius" />
+        <attr name="inputBottomRightRadius" />
+        <attr name="inputStrokeWidth" />
+        <attr name="inputStrokeColor" />
+        <attr name="inputStrokeDashWidth" />
+        <attr name="inputStrokeDashGap" />
+        <attr name="inputStrokeGradientStart" />
+        <attr name="inputStrokeGradientEnd" />
+
+        <!-- Glow Effect -->
+        <attr name="inputGlowColor" />
+        <attr name="inputGlowSize" />
+
+        <!-- Label & Input Appearance -->
+        <attr name="labelTextColor" />
+        <attr name="labelTextFontFamily" />
+        <attr name="inputFontFamily" />
+        <attr name="fontFamily" />
+        <attr name="labelTextMarginBottom" />
     </declare-styleable>
 
     <declare-styleable name="CustomButton">
@@ -95,5 +203,14 @@
         <attr name="skeletonCornerRadius" format="dimension" />
         <attr name="skeletonShimmerDurationMs" format="integer" />
         <attr name="skeletonAutoStart" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="HorizontalCalendarView">
+        <attr name="hcv_headerTextColor" format="color" />
+        <attr name="hcv_cardBgColor" format="color" />
+        <attr name="hcv_selectedCardBgColor" format="color" />
+        <attr name="hcv_textColor" format="color" />
+        <attr name="hcv_selectedTextColor" format="color" />
+        <attr name="hcv_cardCornerRadius" format="dimension" />
     </declare-styleable>
 </resources>

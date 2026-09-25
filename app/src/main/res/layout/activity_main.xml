@@ -13,46 +13,156 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+        android:background="@color/white"
         android:padding="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:fontFamily="@font/nunito_extralight"
             android:text="Component Showcase Form"
             android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp" />
+            android:textStyle="bold" />
 
-        <!-- Custom InputField Component -->
+        <!-- New HorizontalCalendarView Component Integration -->
+        <com.spradhan.uxcomponentLib.HorizontalCalendarView
+            android:id="@+id/horizontalCalendarView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:hcv_cardBgColor="#F2F2F2"
+            app:hcv_selectedCardBgColor="#E1F5FE"
+            app:hcv_selectedTextColor="#0288D1"
+            app:hcv_cardCornerRadius="14dp" />
+
+        <!-- Custom InputField Component with Start Icon -->
         <com.spradhan.uxcomponentLib.InputField
             android:id="@+id/inputUserName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginBottom="16dp"
+            app:labelText="Username"
+            app:labelTextColor="@color/app_deep_blue"
+            app:hintText="Enter username"
+            app:startIconMarginStart="6dp"
+            app:inputGlowColor="@color/red"
+            app:inputGlowSize="6dp"
+            app:startIcon="@drawable/login_ic"
+            app:startIconTint="@color/black"
+            app:startIconSize="20dp"
+            app:required="false" />
 
-        <!-- Custom SpinnerField Component -->
+        <!-- Custom InputField Component for Mobile Number -->
+        <com.spradhan.uxcomponentLib.InputField
+            android:id="@+id/inputMobileNumber"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:labelText="Mobile Number"
+            app:labelTextColor="@color/app_deep_blue"
+            app:hintText="Enter mobile number"
+            android:inputType="number"
+            app:required="true" />
+
+        <!-- Custom InputField Component with Password Toggle -->
+        <com.spradhan.uxcomponentLib.InputField
+            android:id="@+id/inputPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:hintText="Enter password"
+            app:passwordToggleEnabled="true"
+            app:endIconTint="@color/app_blue"
+            app:endIconSize="24dp"
+            app:inputMarginHorizontal="5dp"
+            app:endIconMarginEnd="8dp"
+            app:inputStrokeWidth="2dp"
+            app:inputStrokeDashWidth="4dp"
+            app:inputStrokeDashGap="2dp"
+            app:inputStrokeGradientStart="@color/app_blue"
+            app:inputStrokeGradientEnd="@color/red"
+            app:inputCornerRadius="10dp"
+            app:inputGlowColor="@color/app_blue"
+            app:inputGlowSize="5dp"
+            app:eyeOpenIcon="@drawable/ic_eye_open"
+            app:eyeCloseIcon="@drawable/ic_eye_close"
+            app:labelText="Password Field"
+            app:labelTextColor="@color/app_deep_blue"
+            app:labelTextFontFamily="@font/nunito_bold"
+            app:inputFontFamily="@font/nunito_bold"
+            app:labelTextMarginBottom="5dp"
+            app:inputBackgroundColor="@android:color/transparent"
+            />
+
+        <!-- Custom SpinnerField Component (Standard) -->
         <com.spradhan.uxcomponentLib.SpinnerField
             android:id="@+id/spinnerRole"
             android:layout_width="match_parent"
+            app:inputMarginVertical="7dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp" />
+
+        <!-- Custom Searchable SpinnerField Component -->
+        <com.spradhan.uxcomponentLib.SpinnerField
+            android:id="@+id/spinnerDepartment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:isSearchable="true"
+            app:dialogTitle="Select Department"
+            app:searchHint="Search department..."
+            app:spHintText="Tap to choose department"
+            app:required="true"
+            app:inputMarginVertical="7dp"
+            app:inputCornerRadius="10dp"
+            app:inputStrokeWidth="1.5dp"
+            app:inputStrokeColor="@color/app_blue"
+            app:inputBackgroundColor="@android:color/transparent"
+            app:labelTextColor="@color/app_deep_blue"
+            app:labelTextFontFamily="@font/nunito_bold"
+            app:labelTextMarginBottom="5dp" />
+
+        <!-- Custom Searchable Multi-Select SpinnerField Component -->
+        <com.spradhan.uxcomponentLib.SpinnerField
+            android:id="@+id/spinnerSkills"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:isMultiSelect="true"
+            app:dialogTitle="Select Technical Skills"
+            app:searchHint="Search skill..."
+            app:inputGlowSize="4dp"
+            app:inputMarginVertical="6dp"
+            app:inputGlowColor="@color/red"
+            app:spHintText="Choose one or more skills"
+            app:required="false" />
 
         <!-- Custom CustomButton Component -->
         <com.spradhan.uxcomponentLib.CustomButton
             android:id="@+id/btnLogin"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             app:cb_cornerRadius="12dp"
-            app:cb_gradientColorStart="#7C2285"
-            app:cb_gradientColorEnd="#244F85"
+            app:cb_strokeWidth="1dp"
+            app:cb_strokeDashGap="2dp"
+            app:cb_glowColor="@color/btn_crimson_red"
+            app:cb_pressedGlowSize="4dp"
+            app:cb_unpressedGlowSize="4dp"
+
+            app:cb_strokeDashWidth="4dp"
+            app:cb_gradientColorStart="@color/black"
+            app:cb_gradientColorEnd="@color/app_blue"
+            app:cb_strokeColor="@color/granite_gray"
+            app:cb_backgroundColor="@color/white"
             app:cb_gradientOrientation="leftRight"
             app:cb_loadingText="Validating profile..."
             app:cb_startIcon="@drawable/login_ic"
-            app:cb_startIconTint="@color/white"
+            app:cb_startIconTint="@color/red"
             app:cb_startIconMargin="10dp"
             app:cb_text=" Details"
-            app:cb_textColor="#FFFFFF" />
+            app:cb_textColor="@color/red" />
 
         <TextView
             android:layout_width="wrap_content"

@@ -304,26 +304,50 @@ class CustomButton @JvmOverloads constructor(
 
     private fun setupGlowTouch() {
 
+        // Make the custom view clickable
+        isClickable = true
+        isFocusable = true
+
         binding.clButton.setOnTouchListener { _, event ->
 
-            when (event.action) {
+            if (loading) {
+                return@setOnTouchListener true
+            }
+
+            when (event.actionMasked) {
 
                 android.view.MotionEvent.ACTION_DOWN -> {
-                    if (!loading) {
-                        isButtonPressed = true
-                        applyGlow()
-                    }
+                    isButtonPressed = true
+                    applyGlow()
+
+                    true
                 }
 
-                android.view.MotionEvent.ACTION_UP,
+                android.view.MotionEvent.ACTION_UP -> {
+                    isButtonPressed = false
+                    applyGlow()
+
+                    // Trigger the listener assigned to CustomButton
+                    performClick()
+
+                    true
+                }
+
                 android.view.MotionEvent.ACTION_CANCEL -> {
                     isButtonPressed = false
                     applyGlow()
-                }
-            }
 
-            false
+                    true
+                }
+
+                else -> true
+            }
         }
+    }
+
+    override fun performClick(): Boolean {
+        super.performClick()
+        return true
     }
 
     private fun applyBackground() {

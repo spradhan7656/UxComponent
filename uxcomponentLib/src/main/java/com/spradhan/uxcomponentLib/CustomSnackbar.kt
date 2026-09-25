@@ -61,6 +61,12 @@ data class SnackbarConfig(
     @ColorInt val iconTint: Int? = null,
     val iconSizeDp: Float = 20f,
 
+    // Trailing/End icon
+    @DrawableRes val endIconRes: Int? = null,
+    @ColorInt val endIconTint: Int? = null,
+    val endIconSizeDp: Float = 20f,
+    val onEndIconClick: (() -> Unit)? = null,
+
     // Background - reuses your existing GradientConfig + CommonUtils
     val gradientConfig: GradientConfig = GradientConfig(
         colors = intArrayOf(0xFF323232.toInt(), 0xFF323232.toInt())
@@ -129,6 +135,24 @@ class SnackbarBuilder(private val activity: Activity) {
 
     fun icon(@DrawableRes resId: Int, @ColorInt tint: Int? = null, sizeDp: Float = config.iconSizeDp) = apply {
         config = config.copy(iconRes = resId, iconTint = tint, iconSizeDp = sizeDp)
+    }
+
+    fun endIcon(
+        @DrawableRes resId: Int,
+        @ColorInt tint: Int? = null,
+        sizeDp: Float = config.endIconSizeDp,
+        onClick: (() -> Unit)? = null
+    ) = apply {
+        config = config.copy(
+            endIconRes = resId,
+            endIconTint = tint,
+            endIconSizeDp = sizeDp,
+            onEndIconClick = onClick ?: config.onEndIconClick
+        )
+    }
+
+    fun endIconAction(onClick: () -> Unit) = apply {
+        config = config.copy(onEndIconClick = onClick)
     }
 
     fun gradient(gradientConfig: GradientConfig) = apply {
@@ -283,6 +307,11 @@ class CustomSnackbar private constructor(
             .start()
     }
 
+    /** Programmatically hides/dismisses the snackbar. Ideal for non-auto-dismissing (INDEFINITE) snackbars. */
+    fun hide() {
+        dismiss()
+    }
+
     // ---- View construction -------------------------------------------------
 
 
@@ -337,6 +366,11 @@ class CustomSnackbar private constructor(
         // Action
         config.actionText?.let { text ->
             contentRow.addView(buildActionView(text))
+        }
+
+        // End Icon
+        config.endIconRes?.let { res ->
+            contentRow.addView(buildEndIconView(res))
         }
 
         outer.addView(contentRow)
@@ -496,6 +530,26 @@ class CustomSnackbar private constructor(
             setOnClickListener {
                 config.onActionClick?.invoke()
                 dismiss()
+            }
+        }
+    }
+
+    private fun buildEndIconView(resId: Int): ImageView {
+        return ImageView(activity).apply {
+            setImageResource(resId)
+            config.endIconTint?.let { tint -> setColorFilter(tint, PorterDuff.Mode.SRC_IN) }
+            layoutParams = LinearLayout.LayoutParams(
+                dp(config.endIconSizeDp),
+                dp(config.endIconSizeDp)
+            ).apply { marginStart = dp(8f) }
+
+            if (config.onEndIconClick != null) {
+                isClickable = true
+                isFocusable = true
+                setOnClickListener {
+                    config.onEndIconClick.invoke()
+                    dismiss()
+                }
             }
         }
     }
