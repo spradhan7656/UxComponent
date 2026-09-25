@@ -38,8 +38,8 @@ jobs:
       - name: Run Unit Tests & Build Debug
         run: ./gradlew test assembleDebug
 
-  auto-release:
-    name: Fully Automated Release & JitPack
+  release-jitpack:
+    name: Release & Trigger JitPack
     needs: build-and-test
     runs-on: ubuntu-latest
     permissions:
@@ -51,27 +51,42 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Bump Version & Push Tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.2.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          default_bump: patch
-          tag_prefix: ""
-          release_branches: main
+      - name: Extract Version from build.gradle.kts
+        id: extract_version
+        run: |
+          VERSION=$(grep -oP 'version\s*=\s*"\K[^"]+' uxcomponentLib/build.gradle.kts)
+          echo "Extracted version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check and Create Git Tag
+        env:
+          VERSION: ${{ steps.extract_version.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if git rev-parse "$VERSION" >/dev/null 2>&1 || git ls-remote --tags origin | grep -qw "$VERSION"; then
+            echo "Tag $VERSION already exists. Skipping tag creation."
+          else
+            echo "Creating tag $VERSION..."
+            git tag "$VERSION"
+            git push origin "$VERSION"
+            echo "Tag $VERSION pushed successfully."
+          fi
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
-        if: steps.tag_version.outputs.new_tag != ''
         with:
-          tag_name: ${{ steps.tag_version.outputs.new_tag }}
-          name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: ${{ steps.tag_version.outputs.changelog }}
+          tag_name: ${{ steps.extract_version.outputs.version }}
+          name: Release ${{ steps.extract_version.outputs.version }}
+          body: "Automated release for version ${{ steps.extract_version.outputs.version }}"
           draft: false
           prerelease: false
+        continue-on-error: true
 
       - name: Trigger JitPack Build
-        if: steps.tag_version.outputs.new_tag != ''
+        env:
+          VERSION: ${{ steps.extract_version.outputs.version }}
         run: |
-          echo "Triggering JitPack build for version: ${{ steps.tag_version.outputs.new_tag }}"
-          curl -s https://jitpack.io/com/github/spradhan7656/UxComponent/${{ steps.tag_version.outputs.new_tag }}/build
+          echo "Triggering JitPack build for version: $VERSION"
+          curl -s https://jitpack.io/com/github/spradhan7656/UxComponent/$VERSION/build
