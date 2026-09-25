@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -23,21 +25,11 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
       - name: Run Unit Tests & Build Debug
         run: ./gradlew test assembleDebug
 
-  auto-tag-and-release:
-    name: Auto Tag & Release JitPack
+  release-jitpack:
+    name: Release & Trigger JitPack
     needs: build-and-test
     runs-on: ubuntu-latest
     permissions:
@@ -49,15 +41,32 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Bump version and push tag
-        id: tag_version
-        uses: mathieudutour/github-tag-action@v6.2.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          default_bump: patch
-          tag_prefix: ""
+      - name: Extract Version from build.gradle.kts
+        id: extract_version
+        run: |
+          VERSION=$(grep -oP 'version\s*=\s*"\K[^"]+' uxcomponentLib/build.gradle.kts)
+          echo "Extracted version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check and Create Git Tag
+        env:
+          VERSION: ${{ steps.extract_version.outputs.version }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "Tag $VERSION already exists."
+          else
+            echo "Creating tag $VERSION..."
+            git tag "$VERSION"
+            git push origin "$VERSION"
+            echo "Tag $VERSION pushed successfully."
+          fi
 
       - name: Trigger JitPack Build
+        env:
+          VERSION: ${{ steps.extract_version.outputs.version }}
         run: |
-          echo "Triggering JitPack build for tag: ${{ steps.tag_version.outputs.new_tag }}"
-          curl -s https://jitpack.io/com/github/spradhan7656/UxComponent/${{ steps.tag_version.outputs.new_tag }}/build
+          echo "Triggering JitPack build for version: $VERSION"
+          curl -s https://jitpack.io/com/github/spradhan7656/UxComponent/$VERSION/build
